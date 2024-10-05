@@ -6,7 +6,8 @@ from sqlalchemy import values
 from database_connection import connection
 
 def welcome():
-    print("Welcome to Flight Game!")
+    print(" _   _               _ _        _____ _ _       _     _   \n| \ | | ___  _ __ __| (_) ___  |  ___| (_) __ _| |__ | |_ \n|  \| |/ _ \| '__/ _` | |/ __| | |_  | | |/ _` | '_ \| __|\n| |\  | (_) | | | (_| | | (__  |  _| | | | (_| | | | | |_ \n|_|_\_|\___/|_|  \__,_|_|\___| |_|   |_|_|\__, |_| |_|\__|\n/ ___|(_)_ __ ___  _   _| | __ _| |_ ___  |___/           \n\___ \| | '_ ` _ \| | | | |/ _` | __/ _ \| '__|           \n ___) | | | | | | | |_| | | (_| | || (_) | |              \n|____/|_|_| |_| |_|\__,_|_|\__,_|\__\___/|_|              ")
+    print("Welcome to Nordic Flight Simulator!")
     play_choice=input("[1]Create a new game\n[2]Continue last game\nPlease input the number to select: ")
     return play_choice
 
@@ -35,7 +36,7 @@ def select_airport(country):
 
 def create_name():
 
-    name = input("Please enter your game ID:")
+    name = input("Please input the name you want to appear in the game:")
     repeat = check_name_repeat(name)
     while (repeat != 0):
         name = input("This username has been taken. Please try again.:")
@@ -77,11 +78,13 @@ def get_location_by_name(name):
 
 def new_game():
     name = create_name()
+    print(f'Hi {name}, now you will choose your initial starting point.')
     start_country = select_country()
     start_airport = select_airport(start_country)
     money = 600
     fuel = 0
     create_new_player(name, money, fuel)
+    print('Great! Now you are here. You can choose the thing you want to do by input the number.')
     start_game(money,fuel,start_airport,name)
 
 def load_save(name):
@@ -89,8 +92,9 @@ def load_save(name):
     cursor = connection.cursor(dictionary=True)
     cursor.execute(sql)
     result = cursor.fetchone()
-    if result == []:
+    if result is None:
         print('Unable to find your save')
+        start_program()
     else:
         print('successfully find your save!')
         print(result)
@@ -98,6 +102,7 @@ def load_save(name):
         fuel = result['fuel_points']
         location = result['location']
         start_game(money, fuel, location, name)
+
 
 
 
@@ -128,12 +133,12 @@ def save_game(money, fuel, location, name):
 
 
 def start_flight(money,fuel,location,name,total_value):
-    print('Please select your flight destination.')
     num = random.randint(1,6)
     if(num == 1 or num == 6):
         bonus = 10
     else: bonus = num
-    print(f'Rolled the dice, the number is {num}, you got {bonus} fuel points.')
+    print(f'\nRolled the dice, the number is {num}, you got {bonus} fuel points.')
+    print('\nPlease select your flight destination.')
     fuel += bonus
     enough_fuel = False
     while(enough_fuel != True):
@@ -245,11 +250,12 @@ def purchase_goods(money,location,name):
                 print(f'Purchase Success!')
     return (money,total_value)
 
+def start_program():
+    play_choice = welcome()
+    if play_choice == "1":
+        new_game()
+    elif play_choice == '2':
+        name = input('Please enter your name: ')
+        load_save(name)
 
-play_choice = welcome()
-
-if play_choice == "1":
-    new_game()
-elif play_choice == '2':
-    name = input('Please enter your name: ')
-    load_save(name)
+start_program()
