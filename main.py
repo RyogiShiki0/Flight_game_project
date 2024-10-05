@@ -129,7 +129,7 @@ def save_game(money, fuel, location, name):
     sql = f"update player set money = {money}, fuel_points = {fuel}, location = '{location}' where player_name = '{name}'"
     cursor = connection.cursor()
     cursor.execute(sql)
-    print('Game has been saved!')
+    print('\nGame has been saved!')
 
 
 def start_flight(money,fuel,location,name,total_value):
@@ -151,11 +151,11 @@ def start_flight(money,fuel,location,name,total_value):
         if (need_fuel_point == 0):
             need_fuel_point = 1
         if(fuel < need_fuel_point):
-            print('You do not have enough fuel points!')
+            print('\nYou do not have enough fuel points!\n')
         else:
             enough_fuel = True
     total_value = total_value * (1 + airport_distance/1000)
-    print(f'You successfully reached your destination and earned {total_value}')
+    print(f'\nYou successfully reached your destination and earned {total_value}\n')
     money += total_value
     fuel -= need_fuel_point
     location = dest_airport
@@ -210,7 +210,7 @@ def purchase_upgrade(money,name):
                 print('\nYou do not have enough money!\n')
             else:
                 money = money - result[choice-1]['cost']
-                print(f"Purchase Success! You have {money} money left\n")
+                print(f"\nPurchase Success! You have {money} money left\n")
                 sql = f"INSERT INTO player_upgrade (player_id, upgrade_id) VALUES ('{get_player_ID(name)}','{result[choice-1]['upgrade_ID']}')"
                 cursor = connection.cursor()
                 cursor.execute(sql)
@@ -247,7 +247,7 @@ def purchase_goods(money,location,name):
                 total_value = amount*value + total_value
                 money = money- amount*value
                 capacity = capacity-weight*amount
-                print(f'Purchase Success!')
+                print(f'\nPurchase Success!\n')
     return (money,total_value)
 
 def start_program():
