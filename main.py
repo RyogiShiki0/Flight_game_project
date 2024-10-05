@@ -121,7 +121,7 @@ def start_game(money,fuel,location,name):
     start_game(money, fuel, location, name)
 
 def save_game(money, fuel, location, name):
-    sql = f"update player set money = {money}, fuel = {fuel}, location = {location} where name = '{name}'"
+    sql = f"update player set money = {money}, fuel_points = {fuel}, location = '{location}' where player_name = '{name}'"
     cursor = connection.cursor()
     cursor.execute(sql)
     print('Game has been saved!')
