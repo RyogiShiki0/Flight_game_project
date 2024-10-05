@@ -7,7 +7,7 @@ from database_connection import connection
 
 def welcome():
     print(" _   _               _ _        _____ _ _       _     _   \n| \ | | ___  _ __ __| (_) ___  |  ___| (_) __ _| |__ | |_ \n|  \| |/ _ \| '__/ _` | |/ __| | |_  | | |/ _` | '_ \| __|\n| |\  | (_) | | | (_| | | (__  |  _| | | | (_| | | | | |_ \n|_|_\_|\___/|_|  \__,_|_|\___| |_|   |_|_|\__, |_| |_|\__|\n/ ___|(_)_ __ ___  _   _| | __ _| |_ ___  |___/           \n\___ \| | '_ ` _ \| | | | |/ _` | __/ _ \| '__|           \n ___) | | | | | | | |_| | | (_| | || (_) | |              \n|____/|_|_| |_| |_|\__,_|_|\__,_|\__\___/|_|              ")
-    print("Welcome to Nordic Flight Simulator!")
+    print("Welcome to Nordic Flight Simulator! This beta version does not represent the final quality.")
     play_choice=input("[1]Create a new game\n[2]Continue last game\nPlease input the number to select: ")
     return play_choice
 
