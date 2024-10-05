@@ -7,7 +7,7 @@ from database_connection import connection
 
 def welcome():
     print("Welcome to Flight Game!")
-    play_choice=input("[1]Create a new game\n[2]Continue last game\n")
+    play_choice=input("[1]Create a new game\n[2]Continue last game\nPlease input the number to select: ")
     return play_choice
 
 def select_country():
@@ -80,22 +80,54 @@ def new_game():
     start_country = select_country()
     start_airport = select_airport(start_country)
     money = 600
-    fuel = 10
+    fuel = 0
     create_new_player(name, money, fuel)
     start_game(money,fuel,start_airport,name)
+
+def load_save(name):
+    sql = f"SELECT * FROM player where player_name = '{name}'"
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    if result == []:
+        print('Unable to find your save')
+    else:
+        print('successfully find your save!')
+        print(result)
+        money = result['money']
+        fuel = result['fuel_points']
+        location = result['location']
+        start_game(money, fuel, location, name)
+
+
+
 
 def start_game(money,fuel,location,name):
     choice = input('\n[1]Start transport mission\n[2]Upgrading aircraft\n[3]Save game\n[4]Check your status\nChoose Things to Do:')
     if (choice == '1'):
         money,total_value = purchase_goods(money,location,name)
         print('The purchase of goods has been completed!')
-        start_flight(money, fuel, location, name)
+        start_flight(money, fuel, location, name, total_value)
 
     elif(choice == '2'):
         money = purchase_upgrade(money,name)
+
+    elif (choice == '3'):
+        save_game(money, fuel, location, name)
+
+    elif (choice == '4'):
+        print(f'name:{name}; money:{money}; fuel:{fuel}; current location:{location}')
+
     start_game(money, fuel, location, name)
 
-def start_flight(money,fuel,location,name):
+def save_game(money, fuel, location, name):
+    sql = f"update player set money = {money}, fuel = {fuel}, location = {location} where name = '{name}'"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    print('Game has been saved!')
+
+
+def start_flight(money,fuel,location,name,total_value):
     print('Please select your flight destination.')
     num = random.randint(1,6)
     if(num == 1 or num == 6):
@@ -103,15 +135,26 @@ def start_flight(money,fuel,location,name):
     else: bonus = num
     print(f'Rolled the dice, the number is {num}, you got {bonus} fuel points.')
     fuel += bonus
-    dest_country = select_country()
-    dest_airport = select_airport(dest_country)
-    airport_distance = distance_calculator(location, dest_airport)
-    fuel_reduction = 1 - (check_fuel_reduction(name) / 100)
-    airport_distance = airport_distance * fuel_reduction
-    need_fuel_point = int(airport_distance/100)
-    if (need_fuel_point == 0):
-        need_fuel_point = 1
-
+    enough_fuel = False
+    while(enough_fuel != True):
+        dest_country = select_country()
+        dest_airport = select_airport(dest_country)
+        airport_distance = distance_calculator(location, dest_airport)
+        fuel_reduction = 1 - (check_fuel_reduction(name) / 100)
+        need_fuel_point = airport_distance * fuel_reduction
+        need_fuel_point = int(need_fuel_point/100)
+        if (need_fuel_point == 0):
+            need_fuel_point = 1
+        if(fuel < need_fuel_point):
+            print('You do not have enough fuel points!')
+        else:
+            enough_fuel = True
+    total_value = total_value * (1 + airport_distance/1000)
+    print(f'You successfully reached your destination and earned {total_value}')
+    money += total_value
+    fuel -= need_fuel_point
+    location = dest_airport
+    start_game(money, fuel, location, name)
 
 
 def check_fuel_reduction(name):
@@ -207,8 +250,6 @@ play_choice = welcome()
 
 if play_choice == "1":
     new_game()
-    dest_country = select_country()
-    dest_airport = select_airport(dest_country)
-    airport_distance = distance_calculator(start_airport, dest_airport)
-    print(airport_distance)
-
+elif play_choice == '2':
+    name = input('Please enter your name: ')
+    load_save(name)
