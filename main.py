@@ -1,8 +1,6 @@
 from geopy import location,distance
 import random
 
-from sqlalchemy import values
-
 from database_connection import connection
 
 def welcome():
@@ -42,7 +40,6 @@ def create_name():
         name = input("This username has been taken. Please try again.:")
         repeat = check_name_repeat(name)
     return name
-
 
 def check_name_repeat(name):
     sql = f"select player_name from player"
@@ -103,10 +100,6 @@ def load_save(name):
         location = result['location']
         start_game(money, fuel, location, name)
 
-
-
-
-
 def start_game(money,fuel,location,name):
     choice = input('\n[1]Start transport mission\n[2]Upgrading aircraft\n[3]Save game\n[4]Check your status\nChoose Things to Do:')
     if (choice == '1'):
@@ -130,7 +123,6 @@ def save_game(money, fuel, location, name):
     cursor = connection.cursor()
     cursor.execute(sql)
     print('\nGame has been saved!')
-
 
 def start_flight(money,fuel,location,name,total_value):
     num = random.randint(1,6)
@@ -160,7 +152,6 @@ def start_flight(money,fuel,location,name,total_value):
     fuel -= need_fuel_point
     location = dest_airport
     start_game(money, fuel, location, name)
-
 
 def check_fuel_reduction(name):
     sql = f"SELECT sum(fuel_reduction_percentage) FROM upgrade where upgrade_id in (select upgrade_id from player_upgrade where player_ID = '{get_player_ID(name)}')"
@@ -216,8 +207,6 @@ def purchase_upgrade(money,name):
                 cursor.execute(sql)
 
     return money
-
-
 
 def purchase_goods(money,location,name):
     sql = f"select * from goods where goods_id in (select goods_id from goods_in_country where iso_country = (SELECT iso_country FROM airport where name = '{location}'))"
